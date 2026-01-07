@@ -67,7 +67,7 @@ git clone --recursive https://github.com/pmwkaa/ioarena
 ### gcc, version
 ```sh
 sudo apt install gcc-11 g++-11
-# 12 is also ok, but it encounter many warnings.
+# 12 is also ok, but it encounter many warnings that need to be fixed.
 ```
 
 
@@ -86,22 +86,25 @@ execute_process(COMMAND ${GIT} describe --tags --always --abbrev=0 "--match=v[0-
 ### rocksdb fix
 cmake/BuildRocksDB.cmake
 ```sh
-# add zstd, tbb dependency
+# add zstd, tbb dependency, allready done in this repo.
 set (ROCKSDB_LIBRARIES "${PROJECT_BINARY_DIR}/db/rocksdb/librocksdb${CMAKE_SHARED_LIBRARY_SUFFIX}" bz2 z lz4 snappy zstd tbb)
-```
-db/rocksdb/CMakeLists.txt
-```sh
-# turn on fail on warnings
-option(FAIL_ON_WARNINGS "Treat compile warnings as errors" OFF)
 ```
 
 db/rocksdb/Makefile
 ```sh
-# turn of waning_flags
+# turn off waning_flags (gcc-11 also need to set this)
 ifndef DISABLE_WARNING_AS_ERROR
 #   WARNING_FLAGS += -Werror
 endif
 ```
+
+
+db/rocksdb/CMakeLists.txt
+```sh
+# turn on fail on warnings for gcc-12 (gcc-11 don't need this)
+option(FAIL_ON_WARNINGS "Treat compile warnings as errors" OFF)
+```
+
 maybe other dependencies specified in [rocksdb](build/db/rocksdb/INSTALL.md) should also be installed.
 
 ### build
