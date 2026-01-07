@@ -2,6 +2,8 @@
 cmake_minimum_required(VERSION 2.8)
 
 project(ioarena)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=deprecated-copy")
 message (STATUS "IOARENA: embedded storage benchmarking.")
 execute_process (COMMAND getconf _NPROCESSORS_ONLN
   OUTPUT_VARIABLE NB_PROCESSOR OUTPUT_STRIP_TRAILING_WHITESPACE)

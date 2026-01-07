@@ -7,3 +7,11 @@ src/ioarena
 src/_ioarena
 src/ness.event
 @*
+## build
+build/*
+bin/*
+
+## temp data
+data/*
+dat_*
+_ioarena/*

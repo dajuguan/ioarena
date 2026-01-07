@@ -62,14 +62,57 @@ Build
 git clone --recursive https://github.com/pmwkaa/ioarena
 ```
 
-**cmake** is required for building.
+**cmake** (at least 3.8.2 required by mdbx, cmake 3.8.2 is compatible with 2.8) is required for building.
 
+### gcc, version
+```sh
+sudo apt install gcc-11 g++-11
+# 12 is also ok, but it encounter many warnings.
+```
+
+
+### mdbx fix
+```sh
+# mdbx submodule url is changed to https://gitflic.ru/project/erthink/libmdbx/commit/d47eed079e71062ef5dd41a147df060ad13d42b2 (already fixed in thi repo)
+git submodule sync db/mdbx
+cd db/mdbx
+git tag v0.11.2 d47eed079e71062ef5dd41a147df060ad13d42b2
+
+# add `--always` to db/mdbx/cmake/utils.cmake due to the tag is removed in the github url
+execute_process(COMMAND ${GIT} describe --tags --always --long --dirty=-dirty
+execute_process(COMMAND ${GIT} describe --tags --always --abbrev=0 "--match=v[0-9]*"
+```
+
+### rocksdb fix
+cmake/BuildRocksDB.cmake
+```sh
+# add zstd, tbb dependency
+set (ROCKSDB_LIBRARIES "${PROJECT_BINARY_DIR}/db/rocksdb/librocksdb${CMAKE_SHARED_LIBRARY_SUFFIX}" bz2 z lz4 snappy zstd tbb)
+```
+db/rocksdb/CMakeLists.txt
+```sh
+# turn on fail on warnings
+option(FAIL_ON_WARNINGS "Treat compile warnings as errors" OFF)
+```
+
+db/rocksdb/Makefile
+```sh
+# turn of waning_flags
+ifndef DISABLE_WARNING_AS_ERROR
+#   WARNING_FLAGS += -Werror
+endif
+```
+maybe other dependencies specified in [rocksdb](build/db/rocksdb/INSTALL.md) should also be installed.
+
+### build
 To enable a specific database driver, pass -DENABLE\_**NAME**=ON to cmake.
 If a specified database is not installed in system, it will be build from db/*name* directory.
 
 ```sh
 mkdir build
 cd build
+export CXX=/usr/bin/g++-11
+export CC=/usr/bin/gcc-11
 cmake .. -DENABLE_ROCKSDB=ON
 make
 src/ioarena -h
