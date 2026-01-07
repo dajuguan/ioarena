@@ -64,33 +64,36 @@ git clone --recursive https://github.com/pmwkaa/ioarena
 
 **cmake** (at least 3.8.2 required by mdbx, cmake 3.8.2 is compatible with 2.8) is required for building.
 
-### gcc, version
+### gcc dependency (version 11)
 ```sh
 sudo apt install gcc-11 g++-11
-# 12 is also ok, but it encounter many warnings that need to be fixed.
+# 12 is also ok, but it encounters many warnings that need to be fixed.
 ```
 
 
 ### mdbx fix
 ```sh
-# mdbx submodule url is changed to https://gitflic.ru/project/erthink/libmdbx/commit/d47eed079e71062ef5dd41a147df060ad13d42b2 (already fixed in thi repo)
+# mdbx submodule url is changed to https://gitflic.ru/project/erthink/libmdbx/commit/d47eed079e71062ef5dd41a147df060ad13d42b2 (already fixed in this repo)
 git submodule sync db/mdbx
 cd db/mdbx
 git tag v0.11.2 d47eed079e71062ef5dd41a147df060ad13d42b2
+```
 
-# add `--always` to db/mdbx/cmake/utils.cmake due to the tag is removed in the github url
+changes in  `db/mdbx/cmake/utils.cmake`
+```
+# add `--always` to db/mdbx/cmake/utils.cmake due to this tag is removed in the github url
 execute_process(COMMAND ${GIT} describe --tags --always --long --dirty=-dirty
 execute_process(COMMAND ${GIT} describe --tags --always --abbrev=0 "--match=v[0-9]*"
 ```
 
 ### rocksdb fix
-cmake/BuildRocksDB.cmake
+changes in `cmake/BuildRocksDB.cmake`
 ```sh
 # add zstd, tbb dependency, allready done in this repo.
 set (ROCKSDB_LIBRARIES "${PROJECT_BINARY_DIR}/db/rocksdb/librocksdb${CMAKE_SHARED_LIBRARY_SUFFIX}" bz2 z lz4 snappy zstd tbb)
 ```
 
-db/rocksdb/Makefile
+changes in `db/rocksdb/Makefile`
 ```sh
 # turn off waning_flags (gcc-11 also need to set this)
 ifndef DISABLE_WARNING_AS_ERROR
@@ -98,14 +101,13 @@ ifndef DISABLE_WARNING_AS_ERROR
 endif
 ```
 
-
-db/rocksdb/CMakeLists.txt
+changes in `db/rocksdb/CMakeLists.txt`
 ```sh
 # turn on fail on warnings for gcc-12 (gcc-11 don't need this)
 option(FAIL_ON_WARNINGS "Treat compile warnings as errors" OFF)
 ```
 
-maybe other dependencies specified in [rocksdb](build/db/rocksdb/INSTALL.md) should also be installed.
+Maybe other dependencies specified in [rocksdb](build/db/rocksdb/INSTALL.md) should also be installed.
 
 ### build
 To enable a specific database driver, pass -DENABLE\_**NAME**=ON to cmake.
