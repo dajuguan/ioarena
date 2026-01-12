@@ -212,9 +212,11 @@ int ia_run(ia *a) {
     if (rc)
       goto bailout;
 
+    printf("sync start 0===================================================n");
     ia_sync_start(a);
     rc = ia_doer_fulfil(&here);
     ia_sync_fihish(a);
+    printf("sync finish0===================================================n");
 
     if (rc)
       goto bailout;
@@ -229,8 +231,10 @@ int ia_run(ia *a) {
     if (rc)
       goto bailout;
 
+    printf("sync start 1===================================================n");
     ia_sync_start(a);
     ia_sync_fihish(a);
+    printf("sync finish1===================================================n");
 
     rc = ia_get_rusage(&rusage_fihish, a->datadir);
     if (rc)

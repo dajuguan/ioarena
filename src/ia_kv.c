@@ -67,10 +67,10 @@ int ia_kvgen_setup(char printable, unsigned ksize, unsigned nspaces,
   } else if (maxkey < BITMASK(48)) {
     width = 48 / 8;
     top = BITMASK(48);
-  } else if (maxkey < (double) BITMASK(56)) {
+  } else if (maxkey < (double)BITMASK(56)) {
     width = 56 / 8;
     top = BITMASK(56);
-  } else if (maxkey < (double) UINT64_MAX) {
+  } else if (maxkey < (double)UINT64_MAX) {
     width = 64 / 8;
     top = UINT64_MAX;
   } else {
@@ -80,6 +80,9 @@ int ia_kvgen_setup(char printable, unsigned ksize, unsigned nspaces,
            nsectors, period, (unsigned)sizeof(uintmax_t) * 8, (int)ceil(width));
     return -1;
   }
+
+  width = 40 / 8;
+  top = BITMASK(40);
 
   double bytes4maxkey = log(top) / log(printable ? ALPHABET_CARDINALITY : 256);
   if (bytes4maxkey > (double)ksize) {
