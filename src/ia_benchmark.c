@@ -50,6 +50,10 @@ static int ia_run_benchmark(iadoer *doer, iabenchmark bench) {
   struct ia_kvpool *pool_a = NULL;
   struct ia_kvpool *pool_b = NULL;
 
+  uint32_t set_batch = 80000;
+  uint32_t set_pending = 0;
+  ia_timestamp_t set_t0 = 0;
+
   // const char *name = ia_benchmarkof(bench);
   // ia_log("<< %s.%s-%d", ioarena.conf.driver, name, doer->nth);
 
@@ -61,6 +65,39 @@ static int ia_run_benchmark(iadoer *doer, iabenchmark bench) {
     int j;
 
     switch (bench) {
+    case IA_BATCH_SET:
+      if (ia_kvgen_get(doer->gen_a, &a, 0))
+        goto bailout;
+
+      /* begin txn only once per batch */
+      if (set_pending == 0) {
+        set_t0 = ia_timestamp_ns();
+        rc = ioarena.driver->begin(doer->ctx, IA_SET);
+        if (rc)
+          goto bailout;
+      }
+
+      rc = ioarena.driver->next(doer->ctx, IA_SET, &a);
+      if (rc)
+        goto bailout;
+
+      ++set_pending;
+      ++i;
+
+      /* commit + histogram once per batch */
+      if (set_pending == set_batch || i == ioarena.conf.count) {
+        rc = ioarena.driver->done(doer->ctx, IA_SET);
+        if (rc)
+          goto bailout;
+
+        doer->hg.acc.n += set_pending - 1;
+        ia_histogram_add(&doer->hg, set_t0,
+                         (uint64_t)a.ksize * set_pending +
+                             (uint64_t)a.vsize * set_pending);
+
+        set_pending = 0;
+      }
+      break;
     case IA_SET:
     case IA_DELETE:
     case IA_GET:

@@ -32,7 +32,7 @@ usage: ioarena [hDBCpnkvmlrwic]
   -D <database_driver>
      choices: sophia, leveldb, rocksdb, wiredtiger, forestdb, lmdb, mdbx, sqlite3, iowow, dummy, unqlite
   -B <benchmarks>
-     choices: set, get, delete, iterate, batch, crud
+     choices: set, get, delete, iterate, batchset(batch_size=80000), batch, crud
   -o <driver option>                 (default: none)
   -m <sync_mode>                     (default: lazy)
      choices: sync, lazy, nosync
@@ -41,8 +41,8 @@ usage: ioarena [hDBCpnkvmlrwic]
   -C <name-prefix> generate csv      (default: (null))
   -p <path> for temporaries          (default: ./_ioarena)
   -n <number_of_operations>          (default: 1000000)
-  -k <key_size>                      (default: 16)
-  -v <value_size>                    (default: 32)
+  -k <key_size>                      (default: 16 bytes)
+  -v <value_size>                    (default: 32 bytes)
   -c continuous completing mode      (default: no)
   -r <number_of_read_threads>        (default: 0)
      `zero` to use single main/common thread

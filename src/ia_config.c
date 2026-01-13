@@ -96,7 +96,7 @@ static inline void ia_configusage(iaconfig *c) {
   ia_log("  -D <database_driver>");
   ia_log("     choices: %s", ia_supported());
   ia_log("  -B <benchmarks>");
-  ia_log("     choices: set, get, delete, iterate, batch, crud");
+  ia_log("     choices: set, get, delete, iterate, batchset, batch, crud");
   ia_log("  -m <sync_mode>                     (default: %s)",
          ia_syncmode2str(c->syncmode));
   ia_log("     choices: sync, lazy, nosync");
@@ -287,6 +287,8 @@ const char *ia_benchmarkof(iabenchmark b) {
   switch (b) {
   case IA_SET:
     return "set";
+  case IA_BATCH_SET:
+    return "batchset";
   case IA_GET:
     return "get";
   case IA_DELETE:
@@ -306,6 +308,8 @@ const char *ia_benchmarkof(iabenchmark b) {
 iabenchmark ia_benchmark(const char *name) {
   if (strcasecmp(name, "set") == 0)
     return IA_SET;
+  else if (strcasecmp(name, "batchset") == 0)
+    return IA_BATCH_SET;
   else if (strcasecmp(name, "get") == 0)
     return IA_GET;
   else if (strcasecmp(name, "del") == 0 || strcasecmp(name, "delete") == 0)

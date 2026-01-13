@@ -58,6 +58,7 @@ int pthread_barrier_wait(pthread_barrier_t *barrier);
 
 typedef enum {
   IA_SET,
+  IA_BATCH_SET,
   IA_BATCH,
   IA_CRUD,
   IA_DELETE,
